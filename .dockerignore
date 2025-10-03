@@ -1,6 +1,12 @@
 node_modules
-npm-debug.log
+.git
+.gitignore
+Dockerfile
+**/node_modules
+**/npm-debug.log
 .DS_Store
 server/ea.json
 server/data/*.json
 *.log
+server/.env
+*.sqlite

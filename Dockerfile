@@ -1,18 +1,20 @@
 FROM node:18-alpine
 
-# Copy entire repo into the image so we can support multiple build contexts
+# Create app directory
 WORKDIR /usr/src/app
-COPY . /usr/src/app
 
-# Determine where package.json is and install dependencies there
+# Copy package files first for better layer caching
+COPY server/package*.json ./server/
+
+# Install dependencies inside the server folder
 RUN set -eux; \
-	if [ -f /usr/src/app/package.json ]; then APP_DIR=/usr/src/app; \
-	elif [ -f /usr/src/app/server/package.json ]; then APP_DIR=/usr/src/app/server; \
-	else echo "package.json not found in /usr/src/app or /usr/src/app/server" >&2; exit 1; fi; \
-	echo "Installing dependencies in $APP_DIR"; \
-	cd "$APP_DIR"; npm ci --only=production;
+	if [ -f /usr/src/app/server/package-lock.json ]; then cd /usr/src/app/server && npm ci --only=production; \
+	else cd /usr/src/app/server && npm install --production; fi
 
-# Ensure start script is executable
+# Copy server source code
+COPY server/ ./server/
+
+# Make sure start wrapper is executable
 RUN if [ -f /usr/src/app/server/start.sh ]; then chmod +x /usr/src/app/server/start.sh; fi
 
 EXPOSE 3000
