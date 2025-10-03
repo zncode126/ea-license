@@ -21,7 +21,9 @@ RUN set -eux; \
 COPY server/ ./server/
 
 # DEBUG: list files to help diagnose missing index.js during remote builds
-RUN echo "==== /usr/src/app contents ====" && ls -la /usr/src/app && echo "==== /usr/src/app/server contents ====" && ls -la /usr/src/app/server || true
+RUN echo "==== /usr/src/app contents ====" && ls -la /usr/src/app || true
+RUN echo "==== recursive listing (find) /usr/src/app ====" && find /usr/src/app -maxdepth 5 -type f -print || true
+RUN echo "==== /usr/src/app/server contents ====" && ls -la /usr/src/app/server || true
 
 # Make sure start wrapper is executable
 RUN if [ -f /usr/src/app/server/start.sh ]; then chmod +x /usr/src/app/server/start.sh; fi
