@@ -10,4 +10,12 @@ fi
 # Default port fallback
 PORT=${PORT:-3000}
 
-node index.js
+# Prefer absolute path so different build contexts / WORKDIRs still work inside containers
+if [ -f "/usr/src/app/server/index.js" ]; then
+  exec node /usr/src/app/server/index.js
+elif [ -f "./index.js" ]; then
+  exec node ./index.js
+else
+  echo "Error: index.js not found in /usr/src/app/server or current directory" >&2
+  exit 1
+fi
