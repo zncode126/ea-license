@@ -1,10 +1,16 @@
 # Minimal Dockerfile for the license server
-FROM node:18-alpine
+FROM node:18-bullseye-slim
 
 # Copy entire repo into the image so we can support both build contexts
 # (repo root or server/ as build context on Render)
 WORKDIR /usr/src/app
 COPY . /usr/src/app
+
+# Install OS-level build tools required by some native npm modules
+RUN set -eux; \
+	apt-get update; \
+	apt-get install -y --no-install-recommends python3 build-essential make g++ ca-certificates; \
+	rm -rf /var/lib/apt/lists/*;
 
 # Determine where package.json is and install dependencies there
 RUN set -eux; \

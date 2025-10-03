@@ -1,4 +1,4 @@
-FROM node:18-alpine
+FROM node:18-bullseye-slim
 
 # Create app directory
 WORKDIR /usr/src/app
@@ -6,7 +6,13 @@ WORKDIR /usr/src/app
 # Copy package files first for better layer caching
 COPY server/package*.json ./server/
 
-# Install dependencies inside the server folder
+# Install OS-level build tools required by some native npm modules
+RUN set -eux; \
+	apt-get update; \
+	apt-get install -y --no-install-recommends python3 build-essential make g++ ca-certificates; \
+	rm -rf /var/lib/apt/lists/*;
+
+# Install node dependencies inside the server folder
 RUN set -eux; \
 	if [ -f /usr/src/app/server/package-lock.json ]; then cd /usr/src/app/server && npm ci --only=production; \
 	else cd /usr/src/app/server && npm install --production; fi
