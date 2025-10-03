@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: ea-license
+    env: docker
+    branch: main
+    repo: https://github.com/zncode126/ea-license.git
+    plan: free
+    autoDeploy: true
+    dockerfilePath: server/Dockerfile
+    buildCommand: ""
+    startCommand: ""
+    envVars: []
